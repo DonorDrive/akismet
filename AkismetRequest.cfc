@@ -5,11 +5,11 @@ component accessors = "true" {
 	property name = "authorURL" type = "string" default = "";
 	property name = "charset" type = "string" default = "UTF-8";
 	property name = "content" type = "string" default = "";
-	property name = "dateUTC" type = "date" default = "";
+	property name = "dateUTC" type = "string" default = "";
 	property name = "isTest" type = "boolean" default = "false";
 	property name = "language" type = "string" default = "en_US";
 	property name = "permalink" type = "string" default = "";
-	property name = "postDateUTC" type = "date" default = "";
+	property name = "postDateUTC" type = "string" default = "";
 	property name = "referrer" type = "string" default = "";
 	property name = "type" type = "string" default = "";
 	property name = "userAgent" type = "string" default = "";
@@ -17,7 +17,7 @@ component accessors = "true" {
 	property name = "userRole" type = "string" default = "";
 
 	AkismetRequest function init(required string applicationName, required string key, required string url, integer timeout = 5) {
-		variables.userAgent = "#arguments.applicationName# | DonorDrive Akismet/0.0.1";
+		variables.clientUserAgent = "#arguments.applicationName# | DonorDrive Akismet/0.0.1";
 		variables.key = arguments.key;
 		variables.url = arguments.url;
 		variables.timeout = arguments.timeout;
@@ -54,7 +54,7 @@ component accessors = "true" {
 	}
 
 	struct function getResult() {
-		return duplicate(variables.result);
+		return callSucceeded() ? duplicate(variables.result) : {};
 	}
 
 	boolean function isValidComment() {
@@ -66,16 +66,21 @@ component accessors = "true" {
 	}
 
 	private void function sendRequest(required string endpoint, required boolean throwOnError) {
-		try {
-			structDelete(variables, "result");
+		structDelete(variables, "result");
 
+		// per the docs, these fields are always required
+		if(arguments.endpoint == "comment-check" && (len(getUserAgent()) == 0 || len(getUserIP()) == 0)) {
+			throw(type = "AkismetRequest.MissingProperties", message = "userAgent and userIP are compulsory fields");
+		}
+
+		try {
 			cfhttp(
 					method = "post",
 					result = "variables.result",
 					timeout = variables.timeout,
 					url = "https://#variables.key#.rest.akismet.com/1.1/#arguments.endpoint#"
 				) {
-				cfhttpparam(type = "header", name = "User-Agent", value = variables.userAgent);
+				cfhttpparam(type = "header", name = "User-Agent", value = variables.clientUserAgent);
 
 				cfhttpparam(type = "formfield", name = "blog", value = variables.url);
 				cfhttpparam(type = "formfield", name = "blog_charset", value = getCharset());
@@ -89,6 +94,7 @@ component accessors = "true" {
 				cfhttpparam(type = "formfield", name = "comment_type", value = getType());
 				cfhttpparam(type = "formfield", name = "permalink", value = getPermalink());
 				cfhttpparam(type = "formfield", name = "referrer", value = getReferrer());
+				cfhttpparam(type = "formfield", name = "user_agent", value = getUserAgent());
 				cfhttpparam(type = "formfield", name = "user_ip", value = getUserIP());
 				cfhttpparam(type = "formfield", name = "user_role", value = getUserRole());
 
