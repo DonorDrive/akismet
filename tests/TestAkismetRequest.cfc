@@ -1,7 +1,7 @@
 component extends = "mxunit.framework.TestCase" {
 
 	function setup() {
-		variables.akismetRequest = new donordrive.akismet.AkismetRequest(
+		variables.akismetRequest = new lib.akismet.AkismetRequest(
 			applicationName = "MXUnit Test",
 			key = "[ YOUR KEY HERE ]",
 			url = "[ YOUR BLOG URL HERE ]"
