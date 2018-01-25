@@ -16,7 +16,7 @@ component accessors = "true" {
 	property name = "referrer" type = "string" default = "";
 	property name = "type" type = "string" default = "";
 
-	AkismetRequest function init(required string applicationName, required string key, required string url, integer timeout = 5) {
+	AkismetRequest function init(required string applicationName, required string key, required string url, numeric timeout = 5) {
 		variables.clientUserAgent = "#arguments.applicationName# | DonorDrive Akismet/0.0.1";
 		variables.key = arguments.key;
 		variables.url = arguments.url;
