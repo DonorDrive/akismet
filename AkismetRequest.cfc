@@ -2,7 +2,10 @@ component accessors = "true" {
 
 	property name = "author" type = "string" default = "";
 	property name = "authorEmail" type = "string" default = "";
+	property name = "authorIPAddress" type = "string" default = "";
+	property name = "authorRole" type = "string" default = "";
 	property name = "authorURL" type = "string" default = "";
+	property name = "authorUserAgent" type = "string" default = "";
 	property name = "charset" type = "string" default = "UTF-8";
 	property name = "content" type = "string" default = "";
 	property name = "dateUTC" type = "string" default = "";
@@ -12,9 +15,6 @@ component accessors = "true" {
 	property name = "postDateUTC" type = "string" default = "";
 	property name = "referrer" type = "string" default = "";
 	property name = "type" type = "string" default = "";
-	property name = "userAgent" type = "string" default = "";
-	property name = "userIP" type = "string" default = "";
-	property name = "userRole" type = "string" default = "";
 
 	AkismetRequest function init(required string applicationName, required string key, required string url, integer timeout = 5) {
 		variables.clientUserAgent = "#arguments.applicationName# | DonorDrive Akismet/0.0.1";
@@ -24,8 +24,8 @@ component accessors = "true" {
 
 		setDateUTC(now());
 		setReferrer(cgi.http_referer);
-		setUserAgent(cgi.http_user_agent);
-		setUserIP(cgi.remote_addr);
+		setAuthorIPAddress(cgi.remote_addr);
+		setAuthorUserAgent(cgi.http_user_agent);
 
 		return this;
 	}
@@ -69,7 +69,7 @@ component accessors = "true" {
 		structDelete(variables, "result");
 
 		// per the docs, these fields are always required
-		if(arguments.endpoint == "comment-check" && (len(getUserAgent()) == 0 || len(getUserIP()) == 0)) {
+		if(arguments.endpoint == "comment-check" && (len(getAuthorUserAgent()) == 0 || len(getAuthorIPAddress()) == 0)) {
 			throw(type = "AkismetRequest.MissingProperties", message = "userAgent and userIP are compulsory fields");
 		}
 
@@ -94,9 +94,9 @@ component accessors = "true" {
 				cfhttpparam(type = "formfield", name = "comment_type", value = getType());
 				cfhttpparam(type = "formfield", name = "permalink", value = getPermalink());
 				cfhttpparam(type = "formfield", name = "referrer", value = getReferrer());
-				cfhttpparam(type = "formfield", name = "user_agent", value = getUserAgent());
-				cfhttpparam(type = "formfield", name = "user_ip", value = getUserIP());
-				cfhttpparam(type = "formfield", name = "user_role", value = getUserRole());
+				cfhttpparam(type = "formfield", name = "user_agent", value = getAuthorUserAgent());
+				cfhttpparam(type = "formfield", name = "user_ip", value = getAuthorIPAddress());
+				cfhttpparam(type = "formfield", name = "user_role", value = getAuthorRole());
 
 				if(getIsTest()) {
 					cfhttpparam(type = "formfield", name = "is_test", value = getIsTest());

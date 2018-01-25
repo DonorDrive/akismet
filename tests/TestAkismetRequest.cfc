@@ -12,7 +12,7 @@ component extends = "mxunit.framework.TestCase" {
 
 	function testCommentCheck_ham() {
 		variables.akismetRequest
-			.setUserRole("administrator")
+			.setAuthorRole("administrator")
 			.setContent("MX Unit Test")
 			.commentCheck(true);
 
@@ -38,7 +38,7 @@ component extends = "mxunit.framework.TestCase" {
 
 	function testSubmitHam() {
 		variables.akismetRequest
-			.setUserRole("administrator")
+			.setAuthorRole("administrator")
 			.setContent("MX Unit Test Ham")
 			.submitHam(true);
 
@@ -48,7 +48,7 @@ component extends = "mxunit.framework.TestCase" {
 
 	function testSubmitSpam() {
 		variables.akismetRequest
-			.setUserRole("administrator")
+			.setAuthorRole("administrator")
 			.setContent("MX Unit Test Spam")
 			.submitSpam(true);
 
