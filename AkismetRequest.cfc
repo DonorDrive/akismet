@@ -70,7 +70,7 @@ component accessors = "true" {
 
 		// per the docs, these fields are always required
 		if(arguments.endpoint == "comment-check" && (len(getAuthorUserAgent()) == 0 || len(getAuthorIPAddress()) == 0)) {
-			throw(type = "AkismetRequest.MissingProperties", message = "userAgent and userIP are compulsory fields");
+			throw(type = "AkismetRequest.MissingProperties", message = "authorUserAgent and authorIPAddress are compulsory fields");
 		}
 
 		try {
